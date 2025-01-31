@@ -1,0 +1,69 @@
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important; /* Safari y Chrome */
+    print-color-adjust: exact !important; /* Firefox y otros */
+  }
+
+  body {
+    background-color: white !important; /* Evita fondos grises */
+    font-family: Arial, sans-serif;
+  }
+}
+
+#tabla-horario {
+  width: 100%;
+  max-width: 600px;
+  border-collapse: collapse;
+  margin: auto;
+  font-size: 10px;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#tabla-horario th, #tabla-horario td {
+  border: 1px solid #dee2e6;
+}
+
+#tabla-horario th {
+  background: Maroon;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+#tabla-horario tr:nth-child(even) {
+  background: #e9ecef;
+}
+
+.td-materia:not(:empty):hover,
+#tabla-horario tr:hover {
+  background: #F4C3CD;
+  transition: background 0.3s ease-in-out;
+}
+
+.td-materia:not(:empty) {
+  background-color: #E5A6B1;
+}
+
+.p-profesor i {
+  font-size: 8px;
+}
+
+.td-hora {
+  font-size: 14px;
+}
+
+.export-buttons:hover {
+  cursor: pointer;
+}
+
+.input-edificios,
+.input-salones {
+  width: 40px;
+  font-size: 8px;
+  margin: 2px;
+}

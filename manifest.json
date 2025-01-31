@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Horarios SAES",
+  "version": "1.0",
+  "author": "Jesus Antonio Lopez Bandala",
+  "description": "Extensión para exportar un horario del SAES IPN México; limpio, ordenado por horas y colocación de edificios y salones",
+  "icons": {
+    "128": "img/logo.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.ipn.mx/Alumnos/Informacion_semestral/Horario_Alumno.aspx"
+      ],
+      "js": [
+        "loader.js"
+      ],
+      "css": [
+        "src/css/styles.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/index.js",
+        "src/classes/Horario.js",
+        "src/classes/ExportacionesHorario.js",
+        "src/css/styles.css",
+        "src/horario.html",
+        "src/classes/EdificiosSalones.js"
+      ],
+      "matches": [
+        "https://*.ipn.mx/*"
+      ]
+    }
+  ]
+}
