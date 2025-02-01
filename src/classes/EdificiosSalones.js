@@ -25,14 +25,19 @@ export default class EdificiosSalones {
   cargarInputs() {
     // Botón para guardar los Edificios y Salones en el localStorage
     const divBotones = document.querySelector(".container table tbody");
-    const button = `
-      <tr align="right">  
-        <td>
-          <button id="btn-guardarES" class="export-buttons BotonGuinda chicomediano redondeado">Guadar edificios y salones</button>
-        </td>
-      </tr>
-    `;
-    divBotones.innerHTML += button;
+    const tr = document.createElement("tr");
+    tr.setAttribute("align", "right");
+    const td = document.createElement("td");
+    const button = document.createElement("button");
+    button.setAttribute("id", "btn-guardarES");
+    button.setAttribute(
+      "class",
+      "export-buttons BotonGuinda chicomediano redondeado"
+    );
+    button.textContent = "Guardar edificios y salones";
+    td.appendChild(button);
+    tr.appendChild(td);
+    divBotones.appendChild(tr);
     const $tabla = document.getElementById("ctl00_mainCopy_GV_Horario");
     const $trs = $tabla.querySelectorAll("tbody tr");
     $trs.forEach((tr, index) => {
@@ -48,25 +53,47 @@ export default class EdificiosSalones {
         const contenido = tr.querySelector(dias[i]);
         if (contenido.textContent === "") continue;
         // Quitamos el Edificio y Salón que pone el SAES por defecto
-        contenido.innerHTML = contenido.innerHTML
+        contenido.textContent = contenido.textContent
           .split("")
           .splice(0, 13)
           .join("");
-        contenido.innerHTML += `
-          <br />
-          <label>Edificio</label>
-          <input id="ctl${numCtrl}_dia${i}_edificio" class="input-edificios" type="text" value="${
-          localStorage.getItem(`ctl${numCtrl}_dia${i}_edificio`)
-            ? localStorage.getItem(`ctl${numCtrl}_dia${i}_edificio`)
-            : ""
-        }" />
-          <label>Salón</label>
-          <input id="ctl${numCtrl}_dia${i}_salon" class="input-salones" type="text" value="${
-          localStorage.getItem(`ctl${numCtrl}_dia${i}_salon`)
-            ? localStorage.getItem(`ctl${numCtrl}_dia${i}_salon`)
-            : ""
-        }" />
-        `;
+
+        const fragment = document.createDocumentFragment();
+        const br = document.createElement("br");
+        const labelEdificio = document.createElement("label");
+        labelEdificio.textContent = "Edificio";
+        const inputEdificio = document.createElement("input");
+        inputEdificio.setAttribute("id", `ctl${numCtrl}_dia${i}_edificio`);
+        inputEdificio.setAttribute("class", "input-edificios");
+        inputEdificio.setAttribute("type", "text");
+        inputEdificio.setAttribute(
+          "value",
+          `${
+            localStorage.getItem(`ctl${numCtrl}_dia${i}_edificio`)
+              ? localStorage.getItem(`ctl${numCtrl}_dia${i}_edificio`)
+              : ""
+          }`
+        );
+        const labelSalon = document.createElement("label");
+        labelSalon.textContent = "Salon";
+        const inputSalon = document.createElement("input");
+        inputSalon.setAttribute("id", `ctl${numCtrl}_dia${i}_salon`);
+        inputSalon.setAttribute("class", "input-salones");
+        inputSalon.setAttribute("type", "text");
+        inputSalon.setAttribute(
+          "value",
+          `${
+            localStorage.getItem(`ctl${numCtrl}_dia${i}_salon`)
+              ? localStorage.getItem(`ctl${numCtrl}_dia${i}_salon`)
+              : ""
+          }`
+        );
+        fragment.appendChild(br);
+        fragment.appendChild(labelEdificio);
+        fragment.appendChild(inputEdificio);
+        fragment.appendChild(labelSalon);
+        fragment.appendChild(inputSalon);
+        contenido.appendChild(fragment);
       }
     });
   }

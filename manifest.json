@@ -5,7 +5,7 @@
   "author": "Jesus Antonio Lopez Bandala",
   "description": "Extensión para exportar un horario del SAES IPN México; limpio, ordenado por horas y colocación de edificios y salones",
   "icons": {
-    "128": "img/logo.png"
+    "128": "img/logo_128.png"
   },
   "action": {
     "default_popup": "popup.html"

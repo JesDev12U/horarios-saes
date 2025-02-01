@@ -1,13 +1,49 @@
 @media print {
   * {
-    -webkit-print-color-adjust: exact !important; /* Safari y Chrome */
-    print-color-adjust: exact !important; /* Firefox y otros */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   body {
-    background-color: white !important; /* Evita fondos grises */
-    font-family: Arial, sans-serif;
+    background-color: white !important;
+    font-size: 10px;
+    margin: 0;
+    padding: 0;
+    zoom: 0.6
   }
+
+  #tabla-horario {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    font-size: 8px; /* Reducir el tamaño de la fuente si es necesario */
+  }
+
+  #tabla-horario th, #tabla-horario td {
+    border: 1px solid #dee2e6;
+    padding: 4px; /* Reducir padding para ahorrar espacio */
+  }
+
+  #tabla-horario th {
+    font-size: 10px;
+  }
+
+  /* Evitar cualquier salto de página dentro de la tabla */
+  tr, td, th {
+    page-break-inside: avoid !important;
+  }
+
+  /* Ajustar escala para que entre en una sola página */
+  @page {
+    size: Letter portrait; /* Forzar impresión en horizontal */
+  }
+}
+
+
+body {
+  background-color: white !important; /* Evita fondos grises */
+  font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
 #tabla-horario {

@@ -1,13 +1,19 @@
 export default class ExportacionesHorario {
   pdf() {
     const divBotones = document.querySelector(".container");
-    const buttonPDF = `
-      <center>  
-        <button id="btn-pdf" class="export-buttons BotonGuinda chicomediano redondeado">Generar PDF</button>
-      </center>
-      <br />
-    `;
-    divBotones.innerHTML += buttonPDF;
+    const center = document.createElement("center");
+    const button = document.createElement("button");
+    button.setAttribute("id", "btn-pdf");
+    button.setAttribute(
+      "class",
+      "export-buttons BotonGuinda chicomediano redondeado"
+    );
+    button.textContent = "Generar PDF";
+    center.appendChild(button);
+    const br = document.createElement("br");
+
+    divBotones.appendChild(center);
+    divBotones.appendChild(br);
 
     //Listener para el botón del PDF
     document
@@ -27,12 +33,17 @@ export default class ExportacionesHorario {
           html = html
             .replace("{{contenido}}", contenido)
             .replace("{{css}}", `<style>${css}</style>`);
-          let ventana = window.open("", "", "width=800,height=600");
-          ventana.document.write(html);
-          ventana.document.close();
-          ventana.focus();
-          ventana.print();
-          ventana.close();
+
+          // Convertir el HTML a Blob y abrir en una nueva ventana
+          const blob = new Blob([html], { type: "text/html" });
+          const urlBlob = URL.createObjectURL(blob);
+          const ventana = window.open(urlBlob, "_blank");
+
+          // Esperar a que la ventana cargue antes de imprimir
+          setTimeout(() => {
+            ventana.print();
+            URL.revokeObjectURL(urlBlob);
+          }, 1000);
         } catch (err) {
           console.error(err);
         }

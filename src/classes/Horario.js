@@ -60,7 +60,7 @@ export default class Horario {
   // Estructura de ejemplo
   /* const horario = [
     [
-      "N505", // Nombre de la materia
+      DocumentFragment, // Datos de la materia como DocumentFragment
       null, // Lunes
       [ // Martes
         [20, 22], // Hora de la clase [horaInicio, horaFin]
@@ -82,17 +82,27 @@ export default class Horario {
     $trs.forEach((tr, index) => {
       if (index === 0) return;
       let numCtrl = index + 1 > 9 ? `${index + 1}` : `0${index + 1}`;
-      const nombreMateria = `<p>${
-        tr.querySelector(`#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Grupo`)
-          .textContent
-      }</p><p><b>${tr
+      const materiaFragment = document.createDocumentFragment();
+      const pGrupo = document.createElement("p");
+      pGrupo.textContent = tr.querySelector(
+        `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Grupo`
+      ).textContent;
+      const pMateria = document.createElement("p");
+      const bMateria = document.createElement("b");
+      bMateria.textContent = tr
         .querySelector(`#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Materia`)
-        .textContent.slice(7)}</b></p><p class="p-profesor"><i>${
-        tr.querySelector(
-          `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Profesores`
-        ).textContent
-      }</i></p>
-      `;
+        .textContent.slice(7);
+      pMateria.appendChild(bMateria);
+      const pProfesor = document.createElement("p");
+      pProfesor.setAttribute("class", "p-profesor");
+      const iProfesor = document.createElement("i");
+      iProfesor.textContent = tr.querySelector(
+        `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Profesores`
+      ).textContent;
+      pProfesor.appendChild(iProfesor);
+      materiaFragment.appendChild(pGrupo);
+      materiaFragment.appendChild(pMateria);
+      materiaFragment.appendChild(pProfesor);
       const lunes = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Lunes`;
       const martes = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Martes`;
       const miercoles = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Miercoles`;
@@ -122,7 +132,7 @@ export default class Horario {
       const edificioSalonJueves = [edificioJueves, salonJueves];
       const edificioSalonViernes = [edificioViernes, salonViernes];
       const horas = [
-        nombreMateria,
+        materiaFragment,
         [
           this.convertirHoraATiempo(tr.querySelector(lunes).textContent),
           edificioSalonLunes,
@@ -153,19 +163,44 @@ export default class Horario {
     const fragment = document.createDocumentFragment();
     const table = document.createElement("table");
     table.setAttribute("id", "tabla-horario");
-    table.innerHTML = `
-      <thead>
-        <tr>
-          <th style="padding: 0 30px 0 30px;">Hora</th>
-          <th>Lunes</th>
-          <th>Martes</th>
-          <th>Miércoles</th>
-          <th>Jueves</th>
-          <th>Viernes</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    `;
+    const thead = document.createElement("thead");
+    const tr = document.createElement("tr");
+    const thHora = document.createElement("th");
+    thHora.setAttribute("style", "padding: 0 30px 0 30px;");
+    thHora.textContent = "Hora";
+    const thLunes = document.createElement("th");
+    thLunes.textContent = "Lunes";
+    const thMartes = document.createElement("th");
+    thMartes.textContent = "Martes";
+    const thMiercoles = document.createElement("th");
+    thMiercoles.textContent = "Miércoles";
+    const thJueves = document.createElement("th");
+    thJueves.textContent = "Jueves";
+    const thViernes = document.createElement("th");
+    thViernes.textContent = "Viernes";
+    const tbodyTable = document.createElement("tbody");
+    tr.appendChild(thHora);
+    tr.appendChild(thLunes);
+    tr.appendChild(thMartes);
+    tr.appendChild(thMiercoles);
+    tr.appendChild(thJueves);
+    tr.appendChild(thViernes);
+    thead.appendChild(tr);
+    table.appendChild(thead);
+    table.appendChild(tbodyTable);
+    // table.innerHTML = `
+    //   <thead>
+    //     <tr>
+    //       <th style="padding: 0 30px 0 30px;">Hora</th>
+    //       <th>Lunes</th>
+    //       <th>Martes</th>
+    //       <th>Miércoles</th>
+    //       <th>Jueves</th>
+    //       <th>Viernes</th>
+    //     </tr>
+    //   </thead>
+    //   <tbody></tbody>
+    // `;
     const tbody = table.querySelector("tbody");
     const celdasCombinadas = {};
 
@@ -178,9 +213,11 @@ export default class Horario {
         index + 1 < this.intervalos.length
           ? this.intervalos[index + 1]
           : hora + this.intervalo;
-      tdHora.innerHTML = `<p>${this.formatTime(horaInicio)} - ${this.formatTime(
+      const pHora = document.createElement("p");
+      pHora.textContent = `${this.formatTime(horaInicio)} - ${this.formatTime(
         horaFin
-      )}</p>`;
+      )}`;
+      tdHora.appendChild(pHora);
       tr.appendChild(tdHora);
 
       this.dias.forEach((_dia, diaIndex) => {
@@ -205,15 +242,27 @@ export default class Horario {
           const duracion = (fin - inicio) / this.intervalo;
 
           if (hora === inicio) {
-            const textEdificioSalon =
+            const pEdificio = document.createElement("p");
+            const bEdificio = document.createElement("b");
+            const pSalon = document.createElement("p");
+            const bSalon = document.createElement("b");
+            if (
               materiaEncontrada[diaIndex + 1][1][0] &&
               materiaEncontrada[diaIndex + 1][1][1]
-                ? `<p><b>Edificio: ${
-                    materiaEncontrada[diaIndex + 1][1][0]
-                  }</b></p>
-                <p><b>Salón: ${materiaEncontrada[diaIndex + 1][1][1]}</b></p>`
-                : "";
-            td.innerHTML = materiaEncontrada[0] + textEdificioSalon;
+            ) {
+              bEdificio.textContent = `Edificio: ${
+                materiaEncontrada[diaIndex + 1][1][0]
+              }`;
+              bSalon.textContent = `Salón: ${
+                materiaEncontrada[diaIndex + 1][1][1]
+              }`;
+            }
+            pEdificio.appendChild(bEdificio);
+            pSalon.appendChild(bSalon);
+            const clone = materiaEncontrada[0].cloneNode(true);
+            clone.appendChild(pEdificio);
+            clone.appendChild(pSalon);
+            td.appendChild(clone);
             td.rowSpan = duracion;
             celdasCombinadas[diaIndex] = duracion - 1;
           }
