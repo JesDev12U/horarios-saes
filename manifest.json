@@ -11,10 +11,6 @@
     "default_popup": "popup.html"
   },
   "permissions": [],
-  "host_permissions": [
-    "https://*.ipn.mx/*",
-    "http://*.ipn.mx/*"
-  ],
   "content_scripts": [
     {
       "matches": [
