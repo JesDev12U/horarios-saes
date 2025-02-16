@@ -10,13 +10,16 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": [
-    "activeTab"
+  "permissions": [],
+  "host_permissions": [
+    "https://*.ipn.mx/*",
+    "http://*.ipn.mx/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://*.ipn.mx/Alumnos/Informacion_semestral/Horario_Alumno.aspx"
+        "https://*.ipn.mx/*",
+        "http://*.ipn.mx/*"
       ],
       "js": [
         "loader.js"
@@ -37,7 +40,8 @@
         "src/classes/EdificiosSalones.js"
       ],
       "matches": [
-        "https://*.ipn.mx/*"
+        "https://*.ipn.mx/*",
+        "http://*.ipn.mx/*"
       ]
     }
   ]
