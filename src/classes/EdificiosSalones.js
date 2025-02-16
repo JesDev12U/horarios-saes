@@ -75,7 +75,7 @@ export default class EdificiosSalones {
           }`
         );
         const labelSalon = document.createElement("label");
-        labelSalon.textContent = "Salon";
+        labelSalon.textContent = "Salón";
         const inputSalon = document.createElement("input");
         inputSalon.setAttribute("id", `ctl${numCtrl}_dia${i}_salon`);
         inputSalon.setAttribute("class", "input-salones");
