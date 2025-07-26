@@ -4,6 +4,7 @@ export default class Horario {
     this.dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
     this.intervalo = this.detectarMediasHoras() ? 0.5 : 1;
     this.intervalos = this.generarIntervalos();
+    this.colorPicker = null; // Se inicializará después
   }
 
   formatTime(time) {
@@ -265,6 +266,9 @@ export default class Horario {
             td.appendChild(clone);
             td.rowSpan = duracion;
             celdasCombinadas[diaIndex] = duracion - 1;
+            
+            // Aplicar color personalizado
+            this.aplicarColorPersonalizado(td, clone);
           }
         } else {
           td.textContent = "";
@@ -286,5 +290,42 @@ export default class Horario {
     });
     fragment.appendChild(table);
     return fragment;
+  }
+
+  aplicarColorPersonalizado(td, materiaClone) {
+    const materiaElement = materiaClone.querySelector('b');
+    const grupoElement = materiaClone.querySelector('p:first-child');
+    
+    if (materiaElement && grupoElement) {
+      const nombreMateria = materiaElement.textContent.trim();
+      const grupo = grupoElement.textContent.trim();
+      const materiaKey = `${nombreMateria}_${grupo}`;
+      
+      // Obtener color guardado o usar color por defecto
+      const colorGuardado = localStorage.getItem(`color_${materiaKey}`);
+      if (colorGuardado) {
+        td.style.backgroundColor = colorGuardado;
+        
+        // Calcular color de texto basado en el brillo del fondo
+        const rgb = this.hexToRgb(colorGuardado);
+        if (rgb) {
+          const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+          td.style.color = brightness > 128 ? '#000000' : '#ffffff';
+        }
+      }
+    }
+  }
+
+  hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
+  setColorPicker(colorPicker) {
+    this.colorPicker = colorPicker;
   }
 }

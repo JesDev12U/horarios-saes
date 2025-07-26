@@ -33,7 +33,8 @@
         "src/classes/ExportacionesHorario.js",
         "src/css/styles.css",
         "src/horario.html",
-        "src/classes/EdificiosSalones.js"
+        "src/classes/EdificiosSalones.js",
+        "src/classes/ColorPicker.js"
       ],
       "matches": [
         "https://*.ipn.mx/*",

@@ -170,7 +170,7 @@ export default class ExportacionesHorario {
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
       // Si la imagen es muy alta, ajustar
-      const maxHeight = 285; // mm (A4 height - margins)
+      const maxHeight = 270; // mm (A4 height - margins)
       let finalWidth = imgWidth;
       let finalHeight = imgHeight;
       
@@ -179,9 +179,24 @@ export default class ExportacionesHorario {
         finalWidth = (canvas.width * maxHeight) / canvas.height;
       }
 
+      // Agregar título
+      pdf.setFontSize(16);
+      pdf.setTextColor(128, 0, 0); // Maroon
+      pdf.text('Horario de Clases - SAES IPN', 105, 20, { align: 'center' });
+      
+      // Agregar fecha
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      const fecha = new Date().toLocaleDateString('es-MX', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      pdf.text(`Generado el: ${fecha}`, 105, 28, { align: 'center' });
+
       // Agregar la imagen
       const imgData = canvas.toDataURL('image/png');
-      pdf.addImage(imgData, 'PNG', (210 - finalWidth) / 2, 10, finalWidth, finalHeight);
+      pdf.addImage(imgData, 'PNG', (210 - finalWidth) / 2, 35, finalWidth, finalHeight);
 
       // Generar nombre del archivo
       const nombreArchivo = `horario-saes-${new Date().toISOString().split('T')[0]}.pdf`;

@@ -9,7 +9,7 @@
     font-size: 10px;
     margin: 0;
     padding: 0;
-    zoom: 0.6
+    zoom: 0.6;
   }
 
   #tabla-horario {
@@ -20,7 +20,8 @@
     font-size: 8px; /* Reducir el tamaño de la fuente si es necesario */
   }
 
-  #tabla-horario th, #tabla-horario td {
+  #tabla-horario th,
+  #tabla-horario td {
     border: 1px solid #dee2e6;
     padding: 4px; /* Reducir padding para ahorrar espacio */
   }
@@ -30,7 +31,9 @@
   }
 
   /* Evitar cualquier salto de página dentro de la tabla */
-  tr, td, th {
+  tr,
+  td,
+  th {
     page-break-inside: avoid !important;
   }
 
@@ -39,7 +42,6 @@
     size: Letter portrait; /* Forzar impresión en horizontal */
   }
 }
-
 
 body {
   background-color: white !important; /* Evita fondos grises */
@@ -59,7 +61,8 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#tabla-horario th, #tabla-horario td {
+#tabla-horario th,
+#tabla-horario td {
   border: 1px solid #dee2e6;
 }
 
@@ -77,12 +80,13 @@ body {
 
 .td-materia:not(:empty):hover,
 #tabla-horario tr:hover {
-  background: #F4C3CD;
+  background: #f4c3cd;
   transition: background 0.3s ease-in-out;
 }
 
 .td-materia:not(:empty) {
-  background-color: #E5A6B1;
+  background-color: #e5a6b1;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .p-profesor i {
@@ -102,4 +106,192 @@ body {
   width: 40px;
   font-size: 8px;
   margin: 2px;
+}
+
+/* Estilos para el botón que abre el modal */
+.open-color-picker-btn {
+  display: block;
+  margin: 15px auto;
+  padding: 10px 20px;
+  background: Maroon;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease;
+}
+
+.open-color-picker-btn:hover {
+  background: #8b0000;
+}
+
+/* Estilos para el modal */
+.color-picker-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.color-picker-modal.show {
+  display: flex;
+}
+
+.color-picker-modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.color-picker-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 15px;
+}
+
+.color-picker-modal-title {
+  color: Maroon;
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-modal-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* Estilos para el contenido del color picker dentro del modal */
+.color-picker-container {
+  margin: 0;
+  max-width: none;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.color-picker-container h3 {
+  display: none; /* Ocultar el título ya que está en el header del modal */
+}
+
+.materia-color-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.materia-name {
+  flex: 1;
+  font-weight: bold;
+  color: #333;
+  font-size: 12px;
+}
+
+.color-input {
+  width: 50px;
+  height: 30px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reset-colors-btn {
+  display: block;
+  margin: 15px auto 0;
+  padding: 8px 16px;
+  background: Maroon;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.reset-colors-btn:hover {
+  background: #8b0000;
+}
+
+/* Responsividad para dispositivos móviles */
+@media (max-width: 768px) {
+  .color-picker-modal-content {
+    width: 95%;
+    max-height: 90vh;
+    padding: 15px;
+  }
+
+  .color-picker-modal-title {
+    font-size: 18px;
+  }
+
+  .materia-color-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .materia-name {
+    font-size: 11px;
+  }
+
+  .color-input {
+    width: 100%;
+    max-width: 60px;
+  }
+
+  #tabla-horario {
+    font-size: 8px;
+    max-width: 100%;
+  }
 }
