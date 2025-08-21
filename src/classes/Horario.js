@@ -29,16 +29,31 @@ export default class Horario {
 
   generarIntervalos() {
     const intervalos = new Set();
+    let horaMinima = null;
+    let horaMaxima = null;
+    
+    // Encontrar el rango completo de horas (desde la primera clase hasta la última)
     this.horario.forEach((materia) => {
       for (let i = 1; i < materia.length; i++) {
         if (materia[i][0]) {
           const [inicio, fin] = materia[i][0];
-          for (let hora = inicio; hora <= fin; hora += this.intervalo) {
-            intervalos.add(hora);
+          if (horaMinima === null || inicio < horaMinima) {
+            horaMinima = inicio;
+          }
+          if (horaMaxima === null || fin > horaMaxima) {
+            horaMaxima = fin;
           }
         }
       }
     });
+    
+    // Generar todos los intervalos desde la hora mínima hasta la máxima
+    if (horaMinima !== null && horaMaxima !== null) {
+      for (let hora = horaMinima; hora < horaMaxima; hora += this.intervalo) {
+        intervalos.add(hora);
+      }
+    }
+    
     return Array.from(intervalos).sort((a, b) => a - b);
   }
 
@@ -210,10 +225,7 @@ export default class Horario {
       const tdHora = document.createElement("td");
       tdHora.setAttribute("class", "td-hora");
       const horaInicio = hora;
-      const horaFin =
-        index + 1 < this.intervalos.length
-          ? this.intervalos[index + 1]
-          : hora + this.intervalo;
+      const horaFin = hora + this.intervalo;
       const pHora = document.createElement("p");
       pHora.textContent = `${this.formatTime(horaInicio)} - ${this.formatTime(
         horaFin
@@ -279,15 +291,6 @@ export default class Horario {
       tbody.appendChild(tr);
     });
 
-    const $horarioTr = table.querySelectorAll("tbody tr");
-    $horarioTr.forEach((tr) => {
-      const contenidos = [];
-      tr.querySelectorAll("td").forEach((td, index) => {
-        if (index !== 0) contenidos.push(td.textContent);
-      });
-      if (contenidos.length === 5 && contenidos.every((value) => value === ""))
-        tr.outerHTML = "";
-    });
     fragment.appendChild(table);
     return fragment;
   }

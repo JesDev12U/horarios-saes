@@ -1,7 +1,11 @@
 export default class ExportacionesHorario {
-  constructor(horario) {
+  constructor(horario = null) {
     this.horario = horario;
     this.cargarLibreriasPDF();
+  }
+
+  setHorario(horario) {
+    this.horario = horario;
   }
 
   async cargarLibreriasPDF() {
@@ -24,7 +28,7 @@ export default class ExportacionesHorario {
     });
   }
 
-  pdf() {
+  crearBotonesExportacion() {
     const divBotones = document.querySelector(".container");
     const center = document.createElement("center");
     
@@ -87,8 +91,24 @@ export default class ExportacionesHorario {
       transition: background 0.3s;
     `;
 
+    // Botón Exportar Markdown
+    const buttonMarkdown = document.createElement("button");
+    buttonMarkdown.setAttribute("id", "btn-markdown");
+    buttonMarkdown.setAttribute("class", "export-buttons BotonGuinda chicomediano redondeado");
+    buttonMarkdown.innerHTML = "📝 Exportar Markdown";
+    buttonMarkdown.style.cssText = `
+      background: #4B0082;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    `;
+
     // Agregar efectos hover
-    [buttonPDFDirecto, buttonPDFNavegador, buttonImagen].forEach(btn => {
+    [buttonPDFDirecto, buttonPDFNavegador, buttonImagen, buttonMarkdown].forEach(btn => {
       btn.addEventListener('mouseenter', () => {
         btn.style.opacity = '0.8';
         btn.style.transform = 'scale(1.05)';
@@ -102,6 +122,7 @@ export default class ExportacionesHorario {
     exportContainer.appendChild(buttonPDFDirecto);
     exportContainer.appendChild(buttonPDFNavegador);
     exportContainer.appendChild(buttonImagen);
+    exportContainer.appendChild(buttonMarkdown);
     center.appendChild(exportContainer);
 
     const br = document.createElement("br");
@@ -129,6 +150,12 @@ export default class ExportacionesHorario {
     document.getElementById("btn-imagen")?.addEventListener("click", async (e) => {
       e.preventDefault();
       await this.exportarImagen();
+    });
+
+    // Exportar como Markdown
+    document.getElementById("btn-markdown")?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await this.exportarMarkdown();
     });
   }
 
@@ -481,5 +508,175 @@ export default class ExportacionesHorario {
         }
       }, 300);
     }, 4000);
+  }
+
+  async exportarMarkdown() {
+    try {
+      this.mostrarCargando("Generando Markdown...");
+
+      // Verificar que tenemos acceso al horario
+      if (!this.horario) {
+        throw new Error("No se ha establecido la instancia del horario");
+      }
+
+      const tabla = document.getElementById("tabla-horario");
+      if (!tabla) {
+        throw new Error("No se encontró la tabla del horario");
+      }
+
+      const markdownContent = this.convertirTablaAMarkdown(tabla);
+      await this.descargarMarkdown(markdownContent);
+
+      this.mostrarNotificacion("✅ Horario exportado a Markdown exitosamente", "success");
+    } catch (error) {
+      console.error('Error al exportar a Markdown:', error);
+      this.mostrarNotificacion(`❌ Error al exportar a Markdown: ${error.message}`, "error");
+    } finally {
+      this.ocultarCargando();
+    }
+  }
+
+  convertirTablaAMarkdown(tabla) {
+    const filas = tabla.querySelectorAll('tr');
+    let markdown = '# 📚 Horario de Clases\n\n';
+    
+    // Obtener encabezados
+    const encabezados = [];
+    const primeraFila = filas[0];
+    primeraFila.querySelectorAll('th').forEach(th => {
+      encabezados.push(th.textContent.trim());
+    });
+
+    // Crear encabezado de la tabla en Markdown
+    markdown += '| ' + encabezados.join(' | ') + ' |\n';
+    markdown += '|' + encabezados.map(() => ' --- ').join('|') + '|\n';
+
+    // Crear estructura de datos para el horario completo
+    const horarioCompleto = this.construirHorarioCompleto();
+
+    // Procesar cada intervalo de tiempo
+    horarioCompleto.forEach(intervalo => {
+      const contenidoCeldas = [intervalo.hora];
+      
+      // Para cada día de la semana
+      ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'].forEach(dia => {
+        const materia = intervalo[dia];
+        if (materia) {
+          let contenido = `**${materia.nombre}**`;
+          if (materia.grupo) contenido += ` - ${materia.grupo}`;
+          if (materia.profesor) contenido += ` - *${materia.profesor}*`;
+          if (materia.edificio && materia.salon) {
+            contenido += ` - Edif: ${materia.edificio}, Salón: ${materia.salon}`;
+          }
+          contenidoCeldas.push(contenido);
+        } else {
+          contenidoCeldas.push(' ');
+        }
+      });
+
+      markdown += '| ' + contenidoCeldas.join(' | ') + ' |\n';
+    });
+
+    // Agregar información adicional
+    markdown += '\n---\n\n';
+    markdown += `*Generado el: ${new Date().toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}*\n\n`;
+    
+    markdown += '> **Nota:** Este horario fue exportado desde la extensión Horarios SAES\n';
+
+    return markdown;
+  }
+
+  construirHorarioCompleto() {
+    // Acceder a los datos originales del horario desde la instancia
+    const horarioOriginal = this.horario.horario;
+    const intervalos = this.horario.intervalos;
+    const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+    
+    const horarioCompleto = [];
+
+    // Para cada intervalo de tiempo
+    intervalos.forEach(hora => {
+      const intervalo = {
+        hora: `${this.horario.formatTime(hora)} - ${this.horario.formatTime(hora + this.horario.intervalo)}`,
+        lunes: null,
+        martes: null,
+        miercoles: null,
+        jueves: null,
+        viernes: null
+      };
+
+      // Revisar cada materia en el horario original
+      horarioOriginal.forEach(materia => {
+        // Para cada día de la semana (índices 1-5 en el array de materia)
+        for (let diaIndex = 1; diaIndex <= 5; diaIndex++) {
+          const horarioDia = materia[diaIndex];
+          
+          // Si hay horario para este día
+          if (horarioDia && horarioDia[0]) {
+            const [inicio, fin] = horarioDia[0];
+            const [edificio, salon] = horarioDia[1] || [null, null];
+            
+            // Si la hora actual está dentro del rango de esta materia
+            if (hora >= inicio && hora < fin) {
+              const diaKey = dias[diaIndex - 1];
+              
+              // Extraer información de la materia desde el DocumentFragment
+              const materiaInfo = this.extraerInfoDesdeFragment(materia[0]);
+              
+              intervalo[diaKey] = {
+                nombre: materiaInfo.nombre,
+                grupo: materiaInfo.grupo,
+                profesor: materiaInfo.profesor,
+                edificio: edificio,
+                salon: salon
+              };
+            }
+          }
+        }
+      });
+
+      horarioCompleto.push(intervalo);
+    });
+
+    return horarioCompleto;
+  }
+
+  extraerInfoDesdeFragment(fragment) {
+    // Crear un div temporal para poder hacer queries
+    const tempDiv = document.createElement('div');
+    tempDiv.appendChild(fragment.cloneNode(true));
+    
+    const grupo = tempDiv.querySelector('p:first-child')?.textContent.trim() || '';
+    const nombre = tempDiv.querySelector('p b')?.textContent.trim() || '';
+    const profesor = tempDiv.querySelector('p.p-profesor i')?.textContent.trim() || '';
+    
+    return {
+      nombre,
+      grupo,
+      profesor
+    };
+  }
+
+  async descargarMarkdown(contenido) {
+    const blob = new Blob([contenido], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = `horario-saes-${new Date().toISOString().split('T')[0]}.md`;
+    
+    // Agregar al DOM temporalmente para el clic
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
+    
+    // Limpiar URL
+    URL.revokeObjectURL(url);
   }
 }

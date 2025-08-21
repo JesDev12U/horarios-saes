@@ -3,7 +3,7 @@
   Horarios SAES
 </h1>
 <h4 align="center">Extensión para crear horarios limpios para el sistema SAES IPN México</h4>
-<h5 align="center">Versión 1.1</h5>
+<h5 align="center">Versión 1.2</h5>
 <br>
 <p align="center">¡Descarga la extensión!</p>
 <p align="center">
@@ -11,6 +11,31 @@
 </p>
 
 <p>Usted no tiene que hacer nada, la extensión generará tu horario limpio automáticamente, si deseas poner los edificios y salones de cada una de tus materias, lo puedes hacer ingresando dichos datos en cada cuadro de texto en tu horario y el horario limpio lo guardará automáticamente.</p>
+
+## 🔨 Versión 1.2
+
+### ✨ Mejoras en la Visualización del Horario
+
+- **Horario completo**: Ahora se muestran todas las horas del día, incluyendo las horas libres
+- **Visualización hora por hora**: Las horas libres se muestran individualmente (ej: 10:00-11:00, 11:00-12:00) en lugar de rangos largos
+- **Mejor comprensión**: Puedes ver claramente todos los espacios libres entre clases
+
+### 📝 Nueva Funcionalidad: Exportación a Markdown
+
+¡Ahora puedes exportar tu horario a formato Markdown!
+
+- **Formato estándar**: Compatible con GitHub, GitLab, Obsidian y cualquier editor de Markdown
+- **Repetición inteligente**: Las materias de múltiples horas se repiten en cada hora correspondiente
+- **Información completa**: Incluye materia, grupo, profesor, edificio y salón en cada celda
+- **Sin HTML**: Formato puro de Markdown para máxima compatibilidad
+- **Descarga automática**: Se descarga como archivo `.md` con fecha incluida
+
+### 🎯 Beneficios del Markdown
+
+- ✅ **Documentación**: Perfecto para incluir en README o wikis de proyectos
+- ✅ **Editable**: Fácil de modificar y personalizar después de exportar
+- ✅ **Portable**: Compatible con cualquier plataforma que soporte Markdown
+- ✅ **Legible**: Se ve bien tanto en código como renderizado
 
 ## 🔨 Versión 1.1
 

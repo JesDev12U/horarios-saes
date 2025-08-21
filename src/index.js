@@ -6,10 +6,14 @@ import ColorPicker from "./classes/ColorPicker.js";
 if (document.getElementById("ctl00_mainCopy_GV_Horario")) {
   // Asignamos las exportaciones
   let exportaciones = new ExportacionesHorario();
-  exportaciones.pdf();
+  exportaciones.crearBotonesExportacion();
 
   // Cargamos el horario
   let horario = new Horario();
+  
+  // Establecemos la referencia del horario en las exportaciones
+  exportaciones.setHorario(horario);
+  
   const $container = document.querySelector(".container");
   $container.setAttribute("style", ""); // Quita el height innecesario del SAES
   $container.appendChild(horario.generarHTML());
