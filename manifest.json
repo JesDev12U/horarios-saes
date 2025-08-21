@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Horarios SAES",
-  "version": "1.1",
+  "version": "1.2",
   "author": "Jesus Antonio Lopez Bandala",
   "description": "Extensión para exportar un horario del SAES IPN México; limpio, ordenado por horas y colocación de edificios y salones",
   "icons": {
