@@ -17,6 +17,10 @@
         "https://*.ipn.mx/*",
         "http://*.ipn.mx/*"
       ],
+      "exclude_matches": [
+        "https://*.ipn.mx/Alumnos/Reinscripciones/*",
+        "http://*.ipn.mx/Alumnos/Reinscripciones/*"
+      ],
       "js": [
         "loader.js"
       ],
