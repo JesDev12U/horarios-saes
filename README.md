@@ -22,6 +22,10 @@
 
 - **Inputs de edificios y salones**: Ahora los inputs tienen un diseño que va acorde al diseño del SAES, haciendo que también los labels e inputs no se amontonen y se rompa el diseño.
 
+### 🚫 Eliminación de aparición en la página de reinscripciones
+
+- **Página de reinscripciones**: En la versión anterior, el horario aparecía en las la página de reinscripción, debido a que el SAES ocupa el mismo controlador (id) para el horario de ese apartado. En esta versión, se evita la aparición de la extensión en ese apartado.
+
 ## 🔨 Versión 1.2
 
 ### ✨ Mejoras en la Visualización del Horario
