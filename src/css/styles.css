@@ -103,9 +103,23 @@ body {
 
 .input-edificios,
 .input-salones {
-  width: 40px;
+  width: 35px;
+  max-width: 100%;
   font-size: 8px;
   margin: 2px;
+  padding: 2px 3px;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  text-align: center;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.input-edificios:focus,
+.input-salones:focus {
+  outline: none;
+  border-color: Maroon;
+  box-shadow: 0 0 3px rgba(128, 0, 0, 0.3);
 }
 
 /* Estilos para el botón que abre el modal */

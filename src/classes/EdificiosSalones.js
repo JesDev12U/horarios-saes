@@ -7,11 +7,33 @@ export default class EdificiosSalones {
 
   // Si da de baja, o se termina el semestre, se debe limpiar el localStorage
   verificarCantidadMaterias() {
+    // Buscar la tabla de horario de manera robusta
+    let tablaHorario = document.querySelector(
+      "#ctl00_mainCopy_GV_Horario tbody",
+    );
+
+    if (!tablaHorario) {
+      const elementoConId = document.querySelector('[id*="GV_Horario"]');
+      if (elementoConId) {
+        let elementoActual = elementoConId;
+        while (elementoActual && elementoActual.tagName !== "TABLE") {
+          elementoActual = elementoActual.parentElement;
+        }
+        if (elementoActual && elementoActual.tagName === "TABLE") {
+          tablaHorario = elementoActual.querySelector("tbody");
+        }
+      }
+    }
+
+    if (!tablaHorario) {
+      console.error(
+        "[Horarios SAES] EdificiosSalones: No se encontro el tbody de la tabla",
+      );
+      return;
+    }
+
     // Contar cuantas materias tiene
-    const cantidadMaterias =
-      document
-        .querySelector("#ctl00_mainCopy_GV_Horario tbody")
-        .querySelectorAll("tr").length - 1; // -1 para no contar el encabezado
+    const cantidadMaterias = tablaHorario.querySelectorAll("tr").length - 1; // -1 para no contar el encabezado
     if (localStorage.getItem("cantidad_materias")) {
       if (
         Number(localStorage.getItem("cantidad_materias")) !== cantidadMaterias
@@ -32,26 +54,63 @@ export default class EdificiosSalones {
     button.setAttribute("id", "btn-guardarES");
     button.setAttribute(
       "class",
-      "export-buttons BotonGuinda chicomediano redondeado"
+      "export-buttons BotonGuinda chicomediano redondeado",
     );
     button.textContent = "Guardar edificios y salones";
     td.appendChild(button);
     tr.appendChild(td);
     divBotones.appendChild(tr);
-    const $tabla = document.getElementById("ctl00_mainCopy_GV_Horario");
+
+    // Buscar la tabla de horario de manera robusta
+    let $tabla = document.getElementById("ctl00_mainCopy_GV_Horario");
+
+    if (!$tabla) {
+      $tabla = document.querySelector('table[id="ctl00_mainCopy_GV_Horario"]');
+    }
+
+    if (!$tabla) {
+      const elementoConId = document.querySelector('[id*="GV_Horario"]');
+      if (elementoConId) {
+        let elementoActual = elementoConId;
+        while (elementoActual && elementoActual.tagName !== "TABLE") {
+          elementoActual = elementoActual.parentElement;
+        }
+        if (elementoActual && elementoActual.tagName === "TABLE") {
+          $tabla = elementoActual;
+        }
+      }
+    }
+
+    if (!$tabla) {
+      console.error(
+        "[Horarios SAES] EdificiosSalones: No se pudo encontrar la tabla de horario",
+      );
+      return;
+    }
+
     const $trs = $tabla.querySelectorAll("tbody tr");
+
     $trs.forEach((tr, index) => {
       if (index === 0) return;
       let numCtrl = index + 1 > 9 ? `${index + 1}` : `0${index + 1}`;
-      const lunes = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Lunes`;
-      const martes = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Martes`;
-      const miercoles = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Miercoles`;
-      const jueves = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Jueves`;
-      const viernes = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Viernes`;
-      const dias = [lunes, martes, miercoles, jueves, viernes];
-      for (let i = 0; i < dias.length; i++) {
-        const contenido = tr.querySelector(dias[i]);
-        if (contenido.textContent === "") continue;
+
+      // Buscar dinámicamente los labels de los días de la semana
+      const diasBuscados = [
+        "Lunes",
+        "Martes",
+        "Miercoles",
+        "Jueves",
+        "Viernes",
+      ];
+
+      diasBuscados.forEach((dia, diaIndex) => {
+        const labelSelector = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_${dia}`;
+        const contenido = tr.querySelector(labelSelector);
+
+        // Si no existe el label, continuar con el siguiente día
+        if (!contenido) return;
+        if (contenido.textContent === "") return;
+
         // Quitamos el Edificio y Salón que pone el SAES por defecto
         contenido.textContent = contenido.textContent
           .split("")
@@ -63,30 +122,33 @@ export default class EdificiosSalones {
         const labelEdificio = document.createElement("label");
         labelEdificio.textContent = "Edificio";
         const inputEdificio = document.createElement("input");
-        inputEdificio.setAttribute("id", `ctl${numCtrl}_dia${i}_edificio`);
+        inputEdificio.setAttribute(
+          "id",
+          `ctl${numCtrl}_dia${diaIndex}_edificio`,
+        );
         inputEdificio.setAttribute("class", "input-edificios");
         inputEdificio.setAttribute("type", "text");
         inputEdificio.setAttribute(
           "value",
           `${
-            localStorage.getItem(`ctl${numCtrl}_dia${i}_edificio`)
-              ? localStorage.getItem(`ctl${numCtrl}_dia${i}_edificio`)
+            localStorage.getItem(`ctl${numCtrl}_dia${diaIndex}_edificio`)
+              ? localStorage.getItem(`ctl${numCtrl}_dia${diaIndex}_edificio`)
               : ""
-          }`
+          }`,
         );
         const labelSalon = document.createElement("label");
         labelSalon.textContent = "Salón";
         const inputSalon = document.createElement("input");
-        inputSalon.setAttribute("id", `ctl${numCtrl}_dia${i}_salon`);
+        inputSalon.setAttribute("id", `ctl${numCtrl}_dia${diaIndex}_salon`);
         inputSalon.setAttribute("class", "input-salones");
         inputSalon.setAttribute("type", "text");
         inputSalon.setAttribute(
           "value",
           `${
-            localStorage.getItem(`ctl${numCtrl}_dia${i}_salon`)
-              ? localStorage.getItem(`ctl${numCtrl}_dia${i}_salon`)
+            localStorage.getItem(`ctl${numCtrl}_dia${diaIndex}_salon`)
+              ? localStorage.getItem(`ctl${numCtrl}_dia${diaIndex}_salon`)
               : ""
-          }`
+          }`,
         );
         fragment.appendChild(br);
         fragment.appendChild(labelEdificio);
@@ -94,7 +156,7 @@ export default class EdificiosSalones {
         fragment.appendChild(labelSalon);
         fragment.appendChild(inputSalon);
         contenido.appendChild(fragment);
-      }
+      });
     });
   }
 

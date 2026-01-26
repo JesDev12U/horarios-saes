@@ -12,7 +12,7 @@ export default class Horario {
     const minutes = Math.round((time - hours) * 60);
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
       2,
-      "0"
+      "0",
     )}`;
   }
 
@@ -22,8 +22,10 @@ export default class Horario {
         .slice(1)
         .some(
           (horas) =>
-            horas[0] && (horas[0][0] % 1 !== 0 || horas[0][1] % 1 !== 0)
-        )
+            horas &&
+            horas[0] &&
+            (horas[0][0] % 1 !== 0 || horas[0][1] % 1 !== 0),
+        ),
     );
   }
 
@@ -31,11 +33,11 @@ export default class Horario {
     const intervalos = new Set();
     let horaMinima = null;
     let horaMaxima = null;
-    
+
     // Encontrar el rango completo de horas (desde la primera clase hasta la última)
     this.horario.forEach((materia) => {
       for (let i = 1; i < materia.length; i++) {
-        if (materia[i][0]) {
+        if (materia[i] && materia[i][0]) {
           const [inicio, fin] = materia[i][0];
           if (horaMinima === null || inicio < horaMinima) {
             horaMinima = inicio;
@@ -46,14 +48,14 @@ export default class Horario {
         }
       }
     });
-    
+
     // Generar todos los intervalos desde la hora mínima hasta la máxima
     if (horaMinima !== null && horaMaxima !== null) {
       for (let hora = horaMinima; hora < horaMaxima; hora += this.intervalo) {
         intervalos.add(hora);
       }
     }
-    
+
     return Array.from(intervalos).sort((a, b) => a - b);
   }
 
@@ -92,16 +94,42 @@ export default class Horario {
     ...
   ]; */
   obtenerHorario() {
-    const $tabla = document.getElementById("ctl00_mainCopy_GV_Horario");
+    // Buscar la tabla de horario de manera robusta
+    let $tabla = document.getElementById("ctl00_mainCopy_GV_Horario");
+
+    if (!$tabla)
+      $tabla = document.querySelector('table[id="ctl00_mainCopy_GV_Horario"]');
+
+    if (!$tabla) {
+      // Buscar cualquier elemento con GV_Horario y navegar hacia la tabla
+      const elementoConId = document.querySelector('[id*="GV_Horario"]');
+      if (elementoConId) {
+        let elementoActual = elementoConId;
+        while (elementoActual && elementoActual.tagName !== "TABLE")
+          elementoActual = elementoActual.parentElement;
+
+        if (elementoActual && elementoActual.tagName === "TABLE")
+          $tabla = elementoActual;
+      }
+    }
+
+    if (!$tabla) {
+      console.error("[Horarios SAES] No se pudo encontrar la tabla de horario");
+      return [];
+    }
+
     const $trs = $tabla.querySelectorAll("tbody tr");
     const horario = [];
+
     $trs.forEach((tr, index) => {
       if (index === 0) return;
       let numCtrl = index + 1 > 9 ? `${index + 1}` : `0${index + 1}`;
+
+      // Crear el fragmento de materia
       const materiaFragment = document.createDocumentFragment();
       const pGrupo = document.createElement("p");
       pGrupo.textContent = tr.querySelector(
-        `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Grupo`
+        `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Grupo`,
       ).textContent;
       const pMateria = document.createElement("p");
       const bMateria = document.createElement("b");
@@ -113,63 +141,55 @@ export default class Horario {
       pProfesor.setAttribute("class", "p-profesor");
       const iProfesor = document.createElement("i");
       iProfesor.textContent = tr.querySelector(
-        `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Profesores`
+        `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Profesores`,
       ).textContent;
       pProfesor.appendChild(iProfesor);
       materiaFragment.appendChild(pGrupo);
       materiaFragment.appendChild(pMateria);
       materiaFragment.appendChild(pProfesor);
-      const lunes = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Lunes`;
-      const martes = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Martes`;
-      const miercoles = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Miercoles`;
-      const jueves = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Jueves`;
-      const viernes = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_Viernes`;
-      const edificioLunes = localStorage.getItem(`ctl${numCtrl}_dia0_edificio`);
-      const salonLunes = localStorage.getItem(`ctl${numCtrl}_dia0_salon`);
-      const edificioMartes = localStorage.getItem(
-        `ctl${numCtrl}_dia1_edificio`
-      );
-      const salonMartes = localStorage.getItem(`ctl${numCtrl}_dia1_salon`);
-      const edificioMiercoles = localStorage.getItem(
-        `ctl${numCtrl}_dia2_edificio`
-      );
-      const salonMiercoles = localStorage.getItem(`ctl${numCtrl}_dia2_salon`);
-      const edificioJueves = localStorage.getItem(
-        `ctl${numCtrl}_dia3_edificio`
-      );
-      const salonJueves = localStorage.getItem(`ctl${numCtrl}_dia3_salon`);
-      const edificioViernes = localStorage.getItem(
-        `ctl${numCtrl}_dia4_edificio`
-      );
-      const salonViernes = localStorage.getItem(`ctl${numCtrl}_dia4_salon`);
-      const edificioSalonLunes = [edificioLunes, salonLunes];
-      const edificioSalonMartes = [edificioMartes, salonMartes];
-      const edificioSalonMiercoles = [edificioMiercoles, salonMiercoles];
-      const edificioSalonJueves = [edificioJueves, salonJueves];
-      const edificioSalonViernes = [edificioViernes, salonViernes];
-      const horas = [
-        materiaFragment,
-        [
-          this.convertirHoraATiempo(tr.querySelector(lunes).textContent),
-          edificioSalonLunes,
-        ],
-        [
-          this.convertirHoraATiempo(tr.querySelector(martes).textContent),
-          edificioSalonMartes,
-        ],
-        [
-          this.convertirHoraATiempo(tr.querySelector(miercoles).textContent),
-          edificioSalonMiercoles,
-        ],
-        [
-          this.convertirHoraATiempo(tr.querySelector(jueves).textContent),
-          edificioSalonJueves,
-        ],
-        [
-          this.convertirHoraATiempo(tr.querySelector(viernes).textContent),
-          edificioSalonViernes,
-        ],
+
+      // Buscar dinámicamente los labels de los días de la semana
+      const diasBuscados = [
+        "Lunes",
+        "Martes",
+        "Miercoles",
+        "Jueves",
+        "Viernes",
       ];
+      const diasEncontrados = [];
+
+      diasBuscados.forEach((dia, diaIndex) => {
+        // Intentar encontrar el label específico del día
+        const labelSelector = `#ctl00_mainCopy_GV_Horario_ctl${numCtrl}_Lbl_${dia}`;
+        const labelElement = tr.querySelector(labelSelector);
+
+        if (labelElement) {
+          const horaConvertida = this.convertirHoraATiempo(
+            labelElement.textContent,
+          );
+
+          // Obtener datos del localStorage
+          const edificio = localStorage.getItem(
+            `ctl${numCtrl}_dia${diaIndex}_edificio`,
+          );
+          const salon = localStorage.getItem(
+            `ctl${numCtrl}_dia${diaIndex}_salon`,
+          );
+          const edificioSalon = [edificio, salon];
+
+          // Si no hay hora para ese día, agregar null
+          if (!horaConvertida) {
+            diasEncontrados.push(null);
+          } else {
+            diasEncontrados.push([horaConvertida, edificioSalon]);
+          }
+        } else {
+          // Si no se encuentra el label, agregar null
+          diasEncontrados.push(null);
+        }
+      });
+
+      const horas = [materiaFragment, ...diasEncontrados];
       horario.push(horas);
     });
     return horario;
@@ -228,7 +248,7 @@ export default class Horario {
       const horaFin = hora + this.intervalo;
       const pHora = document.createElement("p");
       pHora.textContent = `${this.formatTime(horaInicio)} - ${this.formatTime(
-        horaFin
+        horaFin,
       )}`;
       tdHora.appendChild(pHora);
       tr.appendChild(tdHora);
@@ -244,14 +264,19 @@ export default class Horario {
         let materiaEncontrada = null;
 
         this.horario.forEach((materia) => {
-          const horarioDia = materia[diaIndex + 1][0];
+          // Verificar que el día tenga datos y que tenga horario
+          const diaData = materia[diaIndex + 1];
+          if (!diaData || !diaData[0]) return;
+
+          const horarioDia = diaData[0];
           if (horarioDia && hora >= horarioDia[0] && hora < horarioDia[1]) {
             materiaEncontrada = materia;
           }
         });
 
         if (materiaEncontrada) {
-          const [inicio, fin] = materiaEncontrada[diaIndex + 1][0];
+          const diaData = materiaEncontrada[diaIndex + 1];
+          const [inicio, fin] = diaData[0];
           const duracion = (fin - inicio) / this.intervalo;
 
           if (hora === inicio) {
@@ -259,16 +284,9 @@ export default class Horario {
             const bEdificio = document.createElement("b");
             const pSalon = document.createElement("p");
             const bSalon = document.createElement("b");
-            if (
-              materiaEncontrada[diaIndex + 1][1][0] &&
-              materiaEncontrada[diaIndex + 1][1][1]
-            ) {
-              bEdificio.textContent = `Edificio: ${
-                materiaEncontrada[diaIndex + 1][1][0]
-              }`;
-              bSalon.textContent = `Salón: ${
-                materiaEncontrada[diaIndex + 1][1][1]
-              }`;
+            if (diaData[1][0] && diaData[1][1]) {
+              bEdificio.textContent = `Edificio: ${diaData[1][0]}`;
+              bSalon.textContent = `Salón: ${diaData[1][1]}`;
             }
             pEdificio.appendChild(bEdificio);
             pSalon.appendChild(bSalon);
@@ -278,7 +296,7 @@ export default class Horario {
             td.appendChild(clone);
             td.rowSpan = duracion;
             celdasCombinadas[diaIndex] = duracion - 1;
-            
+
             // Aplicar color personalizado
             this.aplicarColorPersonalizado(td, clone);
           }
@@ -296,24 +314,24 @@ export default class Horario {
   }
 
   aplicarColorPersonalizado(td, materiaClone) {
-    const materiaElement = materiaClone.querySelector('b');
-    const grupoElement = materiaClone.querySelector('p:first-child');
-    
+    const materiaElement = materiaClone.querySelector("b");
+    const grupoElement = materiaClone.querySelector("p:first-child");
+
     if (materiaElement && grupoElement) {
       const nombreMateria = materiaElement.textContent.trim();
       const grupo = grupoElement.textContent.trim();
       const materiaKey = `${nombreMateria}_${grupo}`;
-      
+
       // Obtener color guardado o usar color por defecto
       const colorGuardado = localStorage.getItem(`color_${materiaKey}`);
       if (colorGuardado) {
         td.style.backgroundColor = colorGuardado;
-        
+
         // Calcular color de texto basado en el brillo del fondo
         const rgb = this.hexToRgb(colorGuardado);
         if (rgb) {
           const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-          td.style.color = brightness > 128 ? '#000000' : '#ffffff';
+          td.style.color = brightness > 128 ? "#000000" : "#ffffff";
         }
       }
     }
@@ -321,11 +339,13 @@ export default class Horario {
 
   hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null;
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
   }
 
   setColorPicker(colorPicker) {
