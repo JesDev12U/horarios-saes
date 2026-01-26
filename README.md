@@ -3,7 +3,7 @@
   Horarios SAES
 </h1>
 <h4 align="center">Extensión para crear horarios limpios para el sistema SAES IPN México</h4>
-<h5 align="center">Versión 1.2</h5>
+<h5 align="center">Versión 1.3</h5>
 <br>
 <p align="center">¡Descarga la extensión!</p>
 <p align="center">
@@ -11,6 +11,16 @@
 </p>
 
 <p>Usted no tiene que hacer nada, la extensión generará tu horario limpio automáticamente, si deseas poner los edificios y salones de cada una de tus materias, lo puedes hacer ingresando dichos datos en cada cuadro de texto en tu horario y el horario limpio lo guardará automáticamente.</p>
+
+## 🔨 Versión 1.3
+
+### 🔨 Fix de compatibilidad
+
+- **[MODS SAES](https://github.com/donxd/mods-saes) de [donxd](https://github.com/donxd)**: Hubo una actualización con su extensión, provocando que esta dejara de cargar el horario, en esta versión se corrige el problema, evitando futuras actualizaciones con el horario de este dev.
+
+### ✨ Mejoras de visualización
+
+- **Inputs de edificios y salones**: Ahora los inputs tienen un diseño que va acorde al diseño del SAES, haciendo que también los labels e inputs no se amontonen y se rompa el diseño.
 
 ## 🔨 Versión 1.2
 
