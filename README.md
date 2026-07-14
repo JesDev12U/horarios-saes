@@ -3,7 +3,7 @@
   Horarios SAES
 </h1>
 <h4 align="center">Extensión para crear horarios limpios para el sistema SAES IPN México</h4>
-<h5 align="center">Versión 1.3</h5>
+<h5 align="center">Versión 1.3.1</h5>
 <br>
 <p align="center">¡Descarga la extensión!</p>
 <p align="center">
@@ -11,6 +11,12 @@
 </p>
 
 <p>Usted no tiene que hacer nada, la extensión generará tu horario limpio automáticamente, si deseas poner los edificios y salones de cada una de tus materias, lo puedes hacer ingresando dichos datos en cada cuadro de texto en tu horario y el horario limpio lo guardará automáticamente.</p>
+
+## 🔨 Versión 1.3.1
+
+### 🔒 Eliminación de código remoto
+
+- **Librerías empaquetadas localmente**: Las librerías `jsPDF` y `html2canvas`, usadas para la exportación a PDF e Imágen, ya no se cargan desde un CDN externo (`cdnjs.cloudflare.com`), sino que ahora se incluyen empaquetadas directamente en la extensión. Esto mejora la seguridad y privacidad, evitando la carga de código remoto en tiempo de ejecución.
 
 ## 🔨 Versión 1.3
 
