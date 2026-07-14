@@ -9,12 +9,13 @@ export default class ExportacionesHorario {
   }
 
   async cargarLibreriasPDF() {
-    // Cargar jsPDF y html2canvas dinámicamente
+    // Cargar jsPDF y html2canvas desde los archivos empaquetados con la extensión
+    const scriptHorarios = document.getElementById("script-horarios");
     if (!window.jsPDF) {
-      await this.cargarScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      await this.cargarScript(scriptHorarios.dataset.url_jspdf);
     }
     if (!window.html2canvas) {
-      await this.cargarScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+      await this.cargarScript(scriptHorarios.dataset.url_html2canvas);
     }
   }
 
